@@ -16,7 +16,6 @@ import data.forms.CreateTheoryForm as cthf
 import data.forms.CreateTaskForm as ctaf
 import data.forms.AnswerTaskForm as ataf
 import data.forms.StatsForm as staf
-from werkzeug.utils import redirect
 
 from data.forms.LoginForm import LoginForm
 from data.forms.RegisterForm import RegisterForm
@@ -123,6 +122,20 @@ def view_tasks():
     return render_template('tasks.html', current_user=current_user, **context)
 
 
+@app.route('/theories', methods=['GET'])
+@login_required
+def view_theories():
+    user_group = current_user.group_id
+    db_sess = create_session()
+    theories = (
+        db_sess.query(Theory)
+        .filter(Theory.allowed_groups.like(f'%;{user_group};%'))
+        .order_by(Theory.id)
+        .all()
+    )
+    context = {'theories': theories}
+    return render_template('theories.html', current_user=current_user, **context)
+
 @app.route('/profile', methods=['GET', 'POST'])
 @login_required
 def profile():
@@ -173,13 +186,14 @@ def check_manualanswer():
         return redirect('/')
     if form.validate_on_submit():
         point = Points(
-            user_id=current_user.id,
+            user_id=ma.user_id,
             task_id=ma.tsk.id,
             amount=ceil((ma.tsk.given_points * (int(form.score.data) / 100))),
         )
         db_sess.delete(ma)
         db_sess.add(point)
         db_sess.commit()
+        return redirect('/')
 
     context = {'ma': ma, 'form': form}
     return render_template(
@@ -221,6 +235,7 @@ def new_task():
 
 
 @app.route('/task/<int:id>', methods=['GET', 'POST'])
+@login_required
 def solve_task(id):
     form = ataf.AnswerTaskForm()
     db_sess = create_session()
@@ -240,7 +255,7 @@ def solve_task(id):
     )
     if db_sess.query(ManualAnswer).filter(
         (ManualAnswer.user_id == current_user.id) & (ManualAnswer.task_id == task.id)
-    ):
+    ).first():
         return redirect('/tasks')
     if answered:
         return f'За это заданиие у вас {answered.amount} очков'
