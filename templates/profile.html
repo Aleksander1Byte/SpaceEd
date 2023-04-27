@@ -7,7 +7,7 @@
         <form action="" method="POST" class="form" enctype=multipart/form-data>
             {{ form.hidden_tag() }}
             <p>
-                {{ form.weight.label }}<br>
+                <b>{{ form.weight.label }}</b><br>
                 {{ form.weight(class="form-control") }}<br>
                 {% for error in form.weight.errors %}
             <p class="alert alert-danger" role="alert">
@@ -16,7 +16,7 @@
             {% endfor %}
             </p>
             <p>
-                {{ form.height.label }}<br>
+                <b>{{ form.height.label }}</b><br>
                 {{ form.height(class="form-control") }}<br>
                 {% for error in form.height.errors %}
             <p class="alert alert-danger" role="alert">
@@ -25,7 +25,7 @@
             {% endfor %}
             </p>
             <p>
-                {{ form.birthday.label }}<br>
+                <b>{{ form.birthday.label }}</b><br>
                 {{ form.birthday(class="form-control") }}<br>
                 {% for error in form.birthday.errors %}
             <p class="alert alert-danger" role="alert">
@@ -52,5 +52,10 @@
         </div>
     </div>
 </div>
+{% if (data[0] / (data[0] + data[1] + data[2])) * 100 >= 75 and 50 <= form.weight.data <= 90 and 150 <= form.height.data <= 190 %}
+<div class="text-success"><h1>Отличный космонавт!</h1></div>
+{% else %}
+<div class="text-warning"><h1>Нужно ещё тренироваться!</h1></div>
+{% endif %}
 <div style="visibility: hidden" id="stats">{{data}}</div>
 {% endblock %}
