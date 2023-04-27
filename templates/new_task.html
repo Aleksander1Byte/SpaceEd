@@ -13,6 +13,15 @@
     </p>
     {% endfor %}
     </p>
+    <p>
+        {{ form.answer.label }}<br>
+        {{ form.answer(class="form-control") }}<br>
+        {% for error in form.answer.errors %}
+    <p class="alert alert-danger" role="alert">
+        {{ error }}
+    </p>
+    {% endfor %}
+    </p>
   <div class="form-group">
         <p>
             {{ form.picture.label }}<br>

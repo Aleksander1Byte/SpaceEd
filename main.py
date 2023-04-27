@@ -13,6 +13,7 @@ from flask_login import (
 from werkzeug.exceptions import abort
 import data.forms.CreateTheoryForm as cthf
 import data.forms.CreateTaskForm as ctaf
+import data.forms.AnswerTaskForm as ataf
 from werkzeug.utils import redirect
 
 from data.forms.LoginForm import LoginForm
@@ -66,13 +67,14 @@ def admin_only(func):
 @app.route('/add_task', methods=['GET', 'POST'])
 @login_required
 @admin_only
-def new_test():
+def new_task():
     form = ctaf.NewTaskForm()
     if form.validate_on_submit():
         picture = request.files['picture'] if 'picture' in request.files else None
         db_sess = create_session()
         task = Task(
             question=form.question.data,
+            answer=form.answer.data
         )
 
         task.set_picture_path(picture)
@@ -87,6 +89,27 @@ def new_test():
         form=form,
         task=None,
     )
+
+
+@app.route('/task/<int:id>', methods=['GET', 'POST'])
+def solve_task(id):
+    form = ataf.AnswerTaskForm()
+    db_sess = create_session()
+    task = db_sess.query(Task).get(id)
+    if task is None:
+        abort(404)
+        return
+    if form.validate_on_submit():
+        answer = form.answer.data
+        if task.answer:
+            if task.answer == answer:
+                print('1')
+            else:
+                print('0')
+        else:
+            print('send_to_check')
+    context = {'task': task, 'form': form}
+    return render_template('solve_task.html', current_user=current_user, **context)
 
 
 @app.route('/add_theory', methods=['GET', 'POST'])

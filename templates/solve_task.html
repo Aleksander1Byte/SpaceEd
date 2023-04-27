@@ -1,0 +1,26 @@
+{% extends "index.html" %}
+
+{% block content %}
+
+<center><h2>{{ task.question }}</h2></center>
+{% if task.picture_path %}
+<center>
+    <img src="../../{{ task.picture_path }}" style="max-height: 500px;">
+</center>
+{% endif %}
+<form action="" method="POST" class="form" enctype=multipart/form-data>
+    {{ form.hidden_tag() }}
+    <p>
+        {{ form.answer.label }}<br>
+        {{ form.answer(class="form-control") }}<br>
+        {% for error in form.answer.errors %}
+    <p class="alert alert-danger" role="alert">
+        {{ error }}
+    </p>
+    {% endfor %}
+    </p>
+    <p>{{ form.submit(type="submit", class="btn btn-primary") }}</p>
+    {{message}}
+</form>
+
+{% endblock %}

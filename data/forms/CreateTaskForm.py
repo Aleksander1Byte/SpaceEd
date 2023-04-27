@@ -5,5 +5,6 @@ from wtforms.validators import DataRequired, Length
 
 class NewTaskForm(FlaskForm):
     question = TextAreaField('Вопрос', validators=[DataRequired(), Length(max=300)])
-    picture = FileField("Картинка")
+    picture = FileField('Картинка')
+    answer = StringField('Ответ (Необязательно)')
     submit = SubmitField('Загрузить')
