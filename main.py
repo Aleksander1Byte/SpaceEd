@@ -46,7 +46,10 @@ def main():
 def view_theory(id):
     db_sess = create_session()
     thr = db_sess.query(Theory).get(id)
-    if not (str(current_user.group_id) in thr.allowed_groups.split(';') or current_user.is_admin):
+    if not (
+        str(current_user.group_id) in thr.allowed_groups.split(';')
+        or current_user.is_admin
+    ):
         abort(403)
     if thr is None:
         abort(404)
@@ -91,7 +94,8 @@ def new_task():
         task = Task(
             question=form.question.data,
             answer=form.answer.data,
-            allowed_groups=''
+            given_points=form.points,
+            allowed_groups='',
         )
         allowed_groups = request.form.getlist('group')
         task.set_allowed_groups(allowed_groups)
@@ -107,7 +111,7 @@ def new_task():
         current_user=current_user,
         form=form,
         task=None,
-        unique_groups=unique_groups
+        unique_groups=unique_groups,
     )
 
 
@@ -119,23 +123,28 @@ def solve_task(id):
     if task is None:
         abort(404)
         return
-    if not (str(current_user.group_id) in task.allowed_groups.split(';') or current_user.is_admin):
+    if not (
+        str(current_user.group_id) in task.allowed_groups.split(';')
+        or current_user.is_admin
+    ):
         abort(403)
-    if db_sess.query(Points).filter((Points.user_id == current_user.id) & (Points.task_id == task.id)).first():
-        abort(405)
-        return
+    answered = (
+        db_sess.query(Points)
+        .filter((Points.user_id == current_user.id) & (Points.task_id == task.id))
+        .first()
+    )
+    if answered:
+        return f'За это заданиие у вас {answered.amount} очков'
     if form.validate_on_submit():
         answer = form.answer.data
         if task.answer:
             if task.answer.lower().capitalize() == answer.lower().capitalize():
-                point = Points(user_id=current_user.id,
-                               task_id=task.id,
-                               amount=task.given_points)
+                point = Points(
+                    user_id=current_user.id, task_id=task.id, amount=task.given_points
+                )
                 msg = 'Правильно'
             else:
-                point = Points(user_id=current_user.id,
-                               task_id=task.id,
-                               amount=0)
+                point = Points(user_id=current_user.id, task_id=task.id, amount=0)
                 msg = 'Неправильно'
             db_sess.add(point)
             db_sess.commit()
@@ -161,7 +170,7 @@ def new_theory():
         thr = Theory(
             title=form.title.data,
             description=form.description.data.capitalize(),
-            allowed_groups=''
+            allowed_groups='',
         )
         allowed_groups = request.form.getlist('group')
         thr.set_allowed_groups(allowed_groups)
@@ -176,7 +185,7 @@ def new_theory():
         current_user=current_user,
         form=form,
         thr=None,
-        unique_groups=unique_groups
+        unique_groups=unique_groups,
     )
 
 
