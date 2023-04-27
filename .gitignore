@@ -1,1 +1,5 @@
 /db/database.db
+/static/media/vid/*.mp4
+/static/media/vid/*.avi
+/static/media/img/*.png
+/static/media/img/*.jpg

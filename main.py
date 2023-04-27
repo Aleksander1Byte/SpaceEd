@@ -1,14 +1,20 @@
+from functools import wraps
+
 from data.db_session import global_init, create_session
 import os
-from flask import Flask, render_template, redirect
+from flask import Flask, render_template, redirect, request
 from flask_login import (
     current_user,
     login_user,
     LoginManager, login_required, logout_user,
 )
+from werkzeug.exceptions import abort
+import data.forms.CreateTheoryForm as ctf
+from werkzeug.utils import redirect
 
 from data.forms.LoginForm import LoginForm
 from data.forms.RegisterForm import RegisterForm
+from data.theories import Theory
 from data.users import User
 
 app = Flask(__name__)
@@ -27,6 +33,57 @@ def main():
         'homepage.html',
         title='SpaceEd',
         current_user=current_user,
+    )
+
+
+@app.route('/theory/<int:id>', methods=['GET', 'POST'])
+def view_theory(id):
+    db_sess = create_session()
+    thr = db_sess.query(Theory).get(id)
+    if thr is None:
+        abort(404)
+        return
+    context = {'thr': thr}
+    return render_template('view_theory.html', current_user=current_user, **context)
+
+
+def admin_only(func):
+    @wraps(func)
+    def check(*args, **kwargs):
+        if current_user is None:
+            abort(405)
+        if not current_user.is_admin:
+            abort(405)
+        return func(*args, **kwargs)
+
+    return check
+
+
+@app.route('/add_theory', methods=['GET', 'POST'])
+@login_required
+@admin_only
+def new_theory():
+    form = ctf.NewTheoryForm()
+    if form.validate_on_submit():
+        video = request.files['video'] if 'video' in request.files else None
+        picture = request.files['picture'] if 'picture' in request.files else None
+        db_sess = create_session()
+        thr = Theory(
+            title=form.title.data,
+            description=form.description.data.capitalize(),
+        )
+
+        thr.set_paths(video, picture)
+
+        db_sess.add(thr)
+        db_sess.commit()
+        return redirect('/')
+    return render_template(
+        'new_theory.html',
+        title='Загрузка теоритического материала',
+        current_user=current_user,
+        form=form,
+        thr=None,
     )
 
 

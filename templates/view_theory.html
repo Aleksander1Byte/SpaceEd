@@ -1,0 +1,16 @@
+{% extends "index.html" %}
+{% block content %}
+
+<center><h2>{{ thr.title }}</h2></center>
+<center>
+    <img src="../../{{ thr.picture_path }}" style="max-height: 500px;">
+</center>
+<p>{{ thr.data }}</p>
+{% if obj.video_path %}
+<center>
+    <video controls style="max-width: 500px;">
+        <source src="../../{{ thr.video_path }}">
+    </video>
+</center>
+
+{% endblock %}
