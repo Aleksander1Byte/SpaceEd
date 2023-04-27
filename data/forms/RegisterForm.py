@@ -8,6 +8,6 @@ class RegisterForm(FlaskForm):
     password = PasswordField('Пароль', validators=[DataRequired()])
     password_again = PasswordField('Повторите пароль',
                                    validators=[DataRequired()])
-    nickname = StringField('Ваш никнейм',
-                           validators=[DataRequired()])
-    submit = SubmitField('Вперёд!')
+    first_name = StringField('Имя', validators=[DataRequired()])
+    last_name = StringField('Фамилия', validators=[DataRequired()])
+    submit = SubmitField('Через тернии к звёздам!')

@@ -30,6 +30,19 @@ def main():
     )
 
 
+@app.route('/swap')
+@login_required
+def get_admin():
+    db_sess = create_session()
+    user = db_sess.query(User).get(current_user.id)
+    if user.is_admin:
+        user.is_admin = False
+    else:
+        user.is_admin = True
+    db_sess.commit()
+    return f'Удивительно! Ваши права перевернулись на {user.is_admin}'
+
+
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     form = RegisterForm()
@@ -46,7 +59,7 @@ def register():
         if (
             db_sess.query(User)
             .filter(
-                (User.email == form.email.data) | (User.nickname == form.nickname.data)
+                (User.email == form.email.data)
             )
             .first()
         ):
@@ -57,7 +70,7 @@ def register():
                 message="Такой пользователь уже есть",
                 current_user=current_user,
             )
-        user = User(nickname=form.nickname.data, email=form.email.data)
+        user = User(first_name=form.first_name.data, last_name=form.last_name.data, email=form.email.data)
         user.set_password(form.password.data)
         db_sess.add(user)
         db_sess.commit()
