@@ -1,17 +1,21 @@
 import sqlalchemy
 import os
 from sqlalchemy import orm
+from flask_login import UserMixin
+from sqlalchemy_serializer import SerializerMixin
 
 from .db_session import SqlAlchemyBase
 from .tools.hash import generate_hash
 
 
-class Task(SqlAlchemyBase):
+class Task(SqlAlchemyBase, UserMixin, SerializerMixin):
     __tablename__ = 'tasks'
     id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True, autoincrement=True)
     question = sqlalchemy.Column(sqlalchemy.String, nullable=False)
     answer = sqlalchemy.Column(sqlalchemy.String, nullable=True, default=None)
+    given_points = sqlalchemy.Column(sqlalchemy.Integer, nullable=False, default=0)
     picture_path = sqlalchemy.Column(sqlalchemy.String, nullable=True)
+    users = orm.relation('Points', back_populates='tsk')
     _hash = None
 
     def __hash__(self):

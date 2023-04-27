@@ -2,7 +2,7 @@
 
 {% block content %}
 <form action="" method="POST" class="form" enctype=multipart/form-data>
-    <h1 style="padding-top: 1vh;">Загрузить теорию</h1>
+    <h1 style="padding-top: 1vh;">Загрузить задание</h1>
     {{ form.hidden_tag() }}
     <p>
         {{ form.question.label }}<br>
@@ -17,6 +17,15 @@
         {{ form.answer.label }}<br>
         {{ form.answer(class="form-control") }}<br>
         {% for error in form.answer.errors %}
+    <p class="alert alert-danger" role="alert">
+        {{ error }}
+    </p>
+    {% endfor %}
+    </p>
+    <p>
+        {{ form.points.label }}<br>
+        {{ form.points(class="form-control") }}<br>
+        {% for error in form.points.errors %}
     <p class="alert alert-danger" role="alert">
         {{ error }}
     </p>

@@ -20,6 +20,7 @@ from data.forms.LoginForm import LoginForm
 from data.forms.RegisterForm import RegisterForm
 from data.tasks import Task
 from data.theories import Theory
+from data.points import Points
 from data.users import User
 
 app = Flask(__name__)
@@ -101,13 +102,25 @@ def solve_task(id):
     if task is None:
         abort(404)
         return
+    if db_sess.query(Points).filter((Points.user_id == current_user.id) & (Points.task_id == task.id)).first():
+        abort(405)
+        return
     if form.validate_on_submit():
         answer = form.answer.data
         if task.answer:
             if task.answer.lower().capitalize() == answer.lower().capitalize():
-                print('1')
+                point = Points(user_id=current_user.id,
+                               task_id=task.id,
+                               amount=task.given_points)
+                msg = 'Правильно'
             else:
-                print('0')
+                point = Points(user_id=current_user.id,
+                               task_id=task.id,
+                               amount=0)
+                msg = 'Неправильно'
+            db_sess.add(point)
+            db_sess.commit()
+            return msg
         else:
             print('send_to_check')
     context = {'task': task, 'form': form}
@@ -194,7 +207,7 @@ def register():
             first_name=form.first_name.data,
             last_name=form.last_name.data,
             email=form.email.data,
-            group_id=form.group_id.data
+            group_id=form.group_id.data,
         )
         user.set_password(form.password.data)
         db_sess.add(user)
