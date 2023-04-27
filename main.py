@@ -82,6 +82,33 @@ def get_unique_groups(db_sess):
     return unique_groups
 
 
+@app.route('/tasks', methods=['GET'])
+@login_required
+def view_tasks():
+    db_sess = create_session()
+    user_group = current_user.group_id
+    tasks = (
+        db_sess.query(Task)
+        .filter(Task.allowed_groups.like(f'%;{user_group};%'))
+        .order_by(Task.id)
+        .all()
+    )
+    ratings = list()
+    for t in tasks:
+        ratings.append(
+            (
+                db_sess.query(Points)
+                .filter((Points.user_id == current_user.id) & (Points.task_id == t.id))
+                .first()
+            )
+        )
+    context = {
+        'tasks': tasks,
+        'ratings': ratings
+    }
+    return render_template('tasks.html', current_user=current_user, **context)
+
+
 @app.route('/add_task', methods=['GET', 'POST'])
 @login_required
 @admin_only
@@ -94,8 +121,8 @@ def new_task():
         task = Task(
             question=form.question.data,
             answer=form.answer.data,
-            given_points=form.points,
-            allowed_groups='',
+            given_points=int(form.points.data),
+            allowed_groups=';',
         )
         allowed_groups = request.form.getlist('group')
         task.set_allowed_groups(allowed_groups)
@@ -170,7 +197,7 @@ def new_theory():
         thr = Theory(
             title=form.title.data,
             description=form.description.data.capitalize(),
-            allowed_groups='',
+            allowed_groups=';',
         )
         allowed_groups = request.form.getlist('group')
         thr.set_allowed_groups(allowed_groups)
