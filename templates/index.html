@@ -7,46 +7,46 @@
           integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
     <link rel="stylesheet" href="/static/css/style.css">
 
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
         <div class="container-xxl">
             <div class="site-logo">
-                    <a href="/"><img src="static/img/logo.png" class="pe-5" style="height: 1.75vw" alt="SpaceEd"></a>
+                    <a href="/"><img src="static/img/logo.png" class="pe-5" style="height: 3.25vw" alt="SpaceEd"></a>
                 </div>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                     data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
                     aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <div class="collapse navbar-collapse big" id="navbarSupportedContent">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     {% if not current_user.is_authenticated %}
-                    <li class="nav-item">
+                    <li class="nav-item pe-3">
                         <a class="nav-link" href="/register">Регистрация</a>
                     </li>
-                    <li class="nav-item">
+                    <li class="nav-item pe-3">
                         <a class="nav-link" href="/login">Войти</a>
                     </li>
                     {% else %}
                     {% if current_user.is_admin %}
-                    <li class="nav-item">
+                    <li class="nav-item pe-3">
                         <a class="nav-link" href="/add_theory">Добавить теорию</a>
                     </li>
-                    <li class="nav-item">
+                    <li class="nav-item pe-3">
                         <a class="nav-link" href="/add_task">Добавить задание</a>
                     </li>
                     {% else %}
-                    <li class="nav-item">
+                    <li class="nav-item pe-3">
                         <a class="nav-link" href="/tasks">Текущие задания</a>
                     </li>
                     {% endif %}
-                    <li class="nav-item">
+                    <li class="nav-item pe-3">
                         <a class="nav-link" href="/logout">Выйти из аккаунта</a>
                     </li>
-                    <li class="nav-item">
+                    <li class="nav-item pe-3">
                         <a class="nav-link" href="/profile">Профиль</a>
                     </li>
                     {% endif %}
-                    <li class="nav-item">
+                    <li class="nav-item pe-3">
                         <a class="nav-link" href="/list">Топ учеников</a>
                     </li>
                 </ul>

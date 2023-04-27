@@ -7,3 +7,13 @@ tr.green_line {
 tr.red_line {
     background-color: red;
 }
+.giant {
+    font-size: 45vh;
+}
+.very_big {
+    font-size: 5vh;
+}
+.big {
+    font-size: 2vh;
+    font-weight: 400;
+}

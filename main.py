@@ -35,12 +35,42 @@ global_init('db/database.db')
 DEBUG = True
 
 
+def get_tasks_and_ratings(db_sess):
+    user_group = current_user.group_id
+    tasks = (
+        db_sess.query(Task)
+        .filter(Task.allowed_groups.like(f'%;{user_group};%'))
+        .order_by(Task.id)
+        .all()
+    )
+    ratings = list()
+    for t in tasks:
+        ratings.append(
+            (
+                db_sess.query(Points)
+                .filter((Points.user_id == current_user.id) & (Points.task_id == t.id))
+                .first()
+            )
+        )
+    return ratings, tasks
+
+
 @app.route('/')
 def main():
+    context = {}
+    if current_user.is_authenticated:
+        db_sess = create_session()
+        ratings, tasks = get_tasks_and_ratings(db_sess)
+        didnt = 0
+        for i in range(len(tasks)):
+            if not ratings[i]:
+                didnt += 1
+        context.update({'didnt': didnt})
     return render_template(
         'homepage.html',
         title='SpaceEd',
         current_user=current_user,
+        **context
     )
 
 
@@ -91,26 +121,6 @@ def view_tasks():
     ratings, tasks = get_tasks_and_ratings(db_sess)
     context = {'tasks': tasks, 'ratings': ratings}
     return render_template('tasks.html', current_user=current_user, **context)
-
-
-def get_tasks_and_ratings(db_sess):
-    user_group = current_user.group_id
-    tasks = (
-        db_sess.query(Task)
-        .filter(Task.allowed_groups.like(f'%;{user_group};%'))
-        .order_by(Task.id)
-        .all()
-    )
-    ratings = list()
-    for t in tasks:
-        ratings.append(
-            (
-                db_sess.query(Points)
-                .filter((Points.user_id == current_user.id) & (Points.task_id == t.id))
-                .first()
-            )
-        )
-    return ratings, tasks
 
 
 @app.route('/profile', methods=['GET', 'POST'])

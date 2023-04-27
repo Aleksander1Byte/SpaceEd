@@ -1,5 +1,18 @@
 {% extends "index.html" %}
 
 {% block content %}
-
+{% if current_user.is_authenticated %}
+<center>
+    <div>
+        {% if didnt %}
+        <div>
+            <div class="giant">{{ didnt }}</div>
+            <div class="very_big">Столько заданий осталось прорешать</div>
+        </div>
+        {% else %}
+        <div class="very_big">Все задания сделаны!</div>
+        {% endif %}
+    </div>
+</center>
+{% endif %}
 {% endblock %}
