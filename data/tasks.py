@@ -15,8 +15,13 @@ class Task(SqlAlchemyBase, UserMixin, SerializerMixin):
     answer = sqlalchemy.Column(sqlalchemy.String, nullable=True, default=None)
     given_points = sqlalchemy.Column(sqlalchemy.Integer, nullable=False, default=0)
     picture_path = sqlalchemy.Column(sqlalchemy.String, nullable=True)
+    allowed_groups = sqlalchemy.Column(sqlalchemy.String, default='', nullable=False)
     users = orm.relation('Points', back_populates='tsk')
     _hash = None
+
+    def set_allowed_groups(self, groups):
+        for g in groups:
+            self.allowed_groups += f'{g};'
 
     def __hash__(self):
         if self._hash is None:

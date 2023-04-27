@@ -67,18 +67,34 @@ def admin_only(func):
     return check
 
 
+def get_unique_groups(db_sess):
+    users = db_sess.query(User).all()
+    unique_groups = dict()
+    for user in users:
+        gid = user.group_id
+        if gid in unique_groups:
+            unique_groups[gid].append(user.first_name + ' ' + user.last_name)
+        else:
+            unique_groups[gid] = [user.first_name + ' ' + user.last_name]
+    return unique_groups
+
+
 @app.route('/add_task', methods=['GET', 'POST'])
 @login_required
 @admin_only
 def new_task():
     form = ctaf.NewTaskForm()
+    db_sess = create_session()
+    unique_groups = get_unique_groups(db_sess)
     if form.validate_on_submit():
         picture = request.files['picture'] if 'picture' in request.files else None
-        db_sess = create_session()
         task = Task(
             question=form.question.data,
-            answer=form.answer.data
+            answer=form.answer.data,
+            allowed_groups=''
         )
+        allowed_groups = request.form.getlist('group')
+        task.set_allowed_groups(allowed_groups)
 
         task.set_picture_path(picture)
 
@@ -91,6 +107,7 @@ def new_task():
         current_user=current_user,
         form=form,
         task=None,
+        unique_groups=unique_groups
     )
 
 
@@ -102,6 +119,8 @@ def solve_task(id):
     if task is None:
         abort(404)
         return
+    if not (str(current_user.group_id) in task.allowed_groups.split(';') or current_user.is_admin):
+        abort(403)
     if db_sess.query(Points).filter((Points.user_id == current_user.id) & (Points.task_id == task.id)).first():
         abort(405)
         return
@@ -134,15 +153,7 @@ def new_theory():
     form = cthf.NewTheoryForm()
     db_sess = create_session()
 
-    users = db_sess.query(User).all()
-
-    unique_groups = dict()
-    for user in users:
-        gid = user.group_id
-        if gid in unique_groups:
-            unique_groups[gid].append(user.first_name + ' ' + user.last_name)
-        else:
-            unique_groups[gid] = [user.first_name + ' ' + user.last_name]
+    unique_groups = get_unique_groups(db_sess)
 
     if form.validate_on_submit():
         video = request.files['video'] if 'video' in request.files else None
