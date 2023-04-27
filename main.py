@@ -160,8 +160,8 @@ def profile():
     correct = incorrect = didnt = 0
     for i in range(len(tasks)):
         if ratings[i]:
-            if tasks[i].given_points == 0:
-                incorrect += ratings[i].amount
+            if ratings[i].amount == 0:
+                incorrect += tasks[i].given_points
             else:
                 correct += ratings[i].amount
         else:  # Не приступали
