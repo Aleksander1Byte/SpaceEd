@@ -18,7 +18,12 @@ class Theory(SqlAlchemyBase, UserMixin, SerializerMixin):
 
     video_path = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     picture_path = sqlalchemy.Column(sqlalchemy.String, nullable=True)
+    allowed_groups = sqlalchemy.Column(sqlalchemy.String, default='', nullable=False)
     _hash = None
+
+    def set_allowed_groups(self, groups):
+        for g in groups:
+            self.allowed_groups += f'{g};'
 
     def __hash__(self):
         if self._hash is None:
@@ -39,10 +44,6 @@ class Theory(SqlAlchemyBase, UserMixin, SerializerMixin):
     def set_picture_path(self, path):
         from main import app
         if path.filename == '':
-            self.picture_path = os.path.join(
-                app.config[
-                    'UPLOAD_FOLDER']
-            ) + 'img/' + 'default_pic.png'
             return
 
         self.picture_path = os.path.join(

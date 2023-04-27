@@ -3,9 +3,11 @@
 {% block content %}
 
 <center><h2>{{ thr.title }}</h2></center>
+{% if thr.picture_path %}
 <center>
     <img src="../../{{ thr.picture_path }}" style="max-height: 500px;">
 </center>
+{% endif %}
 <p>{{ thr.description }}</p>
 {% if thr.video_path %}
 <center>

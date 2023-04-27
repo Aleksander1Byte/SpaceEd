@@ -45,6 +45,8 @@ def main():
 def view_theory(id):
     db_sess = create_session()
     thr = db_sess.query(Theory).get(id)
+    if not (str(current_user.group_id) in thr.allowed_groups.split(';') or current_user.is_admin):
+        abort(403)
     if thr is None:
         abort(404)
         return
@@ -102,7 +104,7 @@ def solve_task(id):
     if form.validate_on_submit():
         answer = form.answer.data
         if task.answer:
-            if task.answer == answer:
+            if task.answer.lower().capitalize() == answer.lower().capitalize():
                 print('1')
             else:
                 print('0')
@@ -117,15 +119,28 @@ def solve_task(id):
 @admin_only
 def new_theory():
     form = cthf.NewTheoryForm()
+    db_sess = create_session()
+
+    users = db_sess.query(User).all()
+
+    unique_groups = dict()
+    for user in users:
+        gid = user.group_id
+        if gid in unique_groups:
+            unique_groups[gid].append(user.first_name + ' ' + user.last_name)
+        else:
+            unique_groups[gid] = [user.first_name + ' ' + user.last_name]
+
     if form.validate_on_submit():
         video = request.files['video'] if 'video' in request.files else None
         picture = request.files['picture'] if 'picture' in request.files else None
-        db_sess = create_session()
         thr = Theory(
             title=form.title.data,
             description=form.description.data.capitalize(),
+            allowed_groups=''
         )
-
+        allowed_groups = request.form.getlist('group')
+        thr.set_allowed_groups(allowed_groups)
         thr.set_paths(video, picture)
 
         db_sess.add(thr)
@@ -137,6 +152,7 @@ def new_theory():
         current_user=current_user,
         form=form,
         thr=None,
+        unique_groups=unique_groups
     )
 
 
@@ -178,6 +194,7 @@ def register():
             first_name=form.first_name.data,
             last_name=form.last_name.data,
             email=form.email.data,
+            group_id=form.group_id.data
         )
         user.set_password(form.password.data)
         db_sess.add(user)

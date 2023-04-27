@@ -14,6 +14,7 @@ class User(SqlAlchemyBase, UserMixin, SerializerMixin):
     first_name = sqlalchemy.Column(sqlalchemy.String, nullable=False)
     last_name = sqlalchemy.Column(sqlalchemy.String, nullable=False)
     email = sqlalchemy.Column(sqlalchemy.String, unique=True, nullable=False)
+    group_id = sqlalchemy.Column(sqlalchemy.Integer, nullable=False)
     hashed_password = sqlalchemy.Column(sqlalchemy.String, nullable=False)
     created_date = sqlalchemy.Column(sqlalchemy.DateTime, default=datetime.datetime.now)
     is_admin = sqlalchemy.Column(sqlalchemy.Boolean, default=False)
