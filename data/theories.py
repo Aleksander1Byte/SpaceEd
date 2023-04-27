@@ -1,6 +1,5 @@
 import os
 
-
 import sqlalchemy
 from flask_login import UserMixin
 from sqlalchemy_serializer import SerializerMixin
@@ -11,8 +10,7 @@ from .tools.hash import generate_hash
 
 class Theory(SqlAlchemyBase, UserMixin, SerializerMixin):
     __tablename__ = 'theories'
-    id = sqlalchemy.Column(sqlalchemy.Integer,
-                           primary_key=True, autoincrement=True)
+    id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True, autoincrement=True)
     title = sqlalchemy.Column(sqlalchemy.String, nullable=False)
     description = sqlalchemy.Column(sqlalchemy.String, nullable=True)
 
@@ -32,24 +30,30 @@ class Theory(SqlAlchemyBase, UserMixin, SerializerMixin):
 
     def set_video_path(self, path):
         from main import app
+
         if path.filename == '':
             self.video_path = None
             return
-        self.video_path = os.path.join(
-            app.config[
-                'UPLOAD_FOLDER']
-        ) + 'vid/' + self.__hash__() + path.filename[-4:]
+        self.video_path = (
+            os.path.join(app.config['UPLOAD_FOLDER'])
+            + 'vid/'
+            + self.__hash__()
+            + path.filename[-4:]
+        )
         path.save(self.video_path)
 
     def set_picture_path(self, path):
         from main import app
+
         if path.filename == '':
             return
 
-        self.picture_path = os.path.join(
-            app.config[
-                'UPLOAD_FOLDER']
-        ) + 'img/' + self.__hash__() + path.filename[-4:]
+        self.picture_path = (
+            os.path.join(app.config['UPLOAD_FOLDER'])
+            + 'img/'
+            + self.__hash__()
+            + path.filename[-4:]
+        )
         path.save(self.picture_path)
 
     def set_paths(self, video_path, picture_path):

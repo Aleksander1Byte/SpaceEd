@@ -1,7 +1,8 @@
-import sqlalchemy
 import os
-from sqlalchemy import orm
+
+import sqlalchemy
 from flask_login import UserMixin
+from sqlalchemy import orm
 from sqlalchemy_serializer import SerializerMixin
 
 from .db_session import SqlAlchemyBase
@@ -30,10 +31,13 @@ class Task(SqlAlchemyBase, UserMixin, SerializerMixin):
 
     def set_picture_path(self, path):
         from main import app
+
         if path.filename == '':
             return
-        self.picture_path = os.path.join(
-            app.config[
-                'UPLOAD_FOLDER']
-        ) + 'img/' + self.__hash__() + path.filename[-4:]
+        self.picture_path = (
+            os.path.join(app.config['UPLOAD_FOLDER'])
+            + 'img/'
+            + self.__hash__()
+            + path.filename[-4:]
+        )
         path.save(self.picture_path)

@@ -1,29 +1,24 @@
+import os
 from functools import wraps
 from math import ceil
 
-from data.db_session import global_init, create_session
-import os
-from flask import Flask, render_template, redirect, request
-from flask_login import (
-    current_user,
-    login_user,
-    LoginManager,
-    login_required,
-    logout_user,
-)
+from flask import Flask, redirect, render_template, request
+from flask_login import (LoginManager, current_user, login_required,
+                         login_user, logout_user)
 from werkzeug.exceptions import abort
-import data.forms.CreateTheoryForm as cthf
-import data.forms.CreateTaskForm as ctaf
-import data.forms.AnswerTaskForm as ataf
-import data.forms.StatsForm as staf
 
+import data.forms.AnswerTaskForm as ataf
+import data.forms.CreateTaskForm as ctaf
+import data.forms.CreateTheoryForm as cthf
+import data.forms.StatsForm as staf
+from data.db_session import create_session, global_init
 from data.forms.LoginForm import LoginForm
-from data.forms.RegisterForm import RegisterForm
 from data.forms.ManualAnswerForm import ManualAnswerForm
+from data.forms.RegisterForm import RegisterForm
 from data.manualanswer import ManualAnswer
+from data.points import Points
 from data.tasks import Task
 from data.theories import Theory
-from data.points import Points
 from data.users import User
 from data.userstats import UserStats
 
@@ -135,6 +130,7 @@ def view_theories():
     )
     context = {'theories': theories}
     return render_template('theories.html', current_user=current_user, **context)
+
 
 @app.route('/profile', methods=['GET', 'POST'])
 @login_required
@@ -253,9 +249,14 @@ def solve_task(id):
         .filter((Points.user_id == current_user.id) & (Points.task_id == task.id))
         .first()
     )
-    if db_sess.query(ManualAnswer).filter(
-        (ManualAnswer.user_id == current_user.id) & (ManualAnswer.task_id == task.id)
-    ).first():
+    if (
+        db_sess.query(ManualAnswer)
+        .filter(
+            (ManualAnswer.user_id == current_user.id)
+            & (ManualAnswer.task_id == task.id)
+        )
+        .first()
+    ):
         return redirect('/tasks')
     if answered:
         return f'За это заданиие у вас {answered.amount} очков'
