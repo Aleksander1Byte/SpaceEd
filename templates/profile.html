@@ -2,16 +2,52 @@
 
 {% block content %}
 
-<div class="col-xl-4 col-lg-5">
-    <div class="card shadow mb-4">
-        <div
-                class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-            <h6 class="m-0 font-weight-bold">Статистика ответов</h6>
-        </div>
-        <!-- Card Body -->
-        <div class="card-body">
-            <div class="chart-pie pt-4 pb-2">
-                <canvas id="myPieChart"></canvas>
+<div class="d-flex pt-3">
+    <div class="width-45 me-5">
+        <form action="" method="POST" class="form" enctype=multipart/form-data>
+            {{ form.hidden_tag() }}
+            <p>
+                {{ form.weight.label }}<br>
+                {{ form.weight(class="form-control") }}<br>
+                {% for error in form.weight.errors %}
+            <p class="alert alert-danger" role="alert">
+                {{ error }}
+            </p>
+            {% endfor %}
+            </p>
+            <p>
+                {{ form.height.label }}<br>
+                {{ form.height(class="form-control") }}<br>
+                {% for error in form.height.errors %}
+            <p class="alert alert-danger" role="alert">
+                {{ error }}
+            </p>
+            {% endfor %}
+            </p>
+            <p>
+                {{ form.birthday.label }}<br>
+                {{ form.birthday(class="form-control") }}<br>
+                {% for error in form.birthday.errors %}
+            <p class="alert alert-danger" role="alert">
+                {{ error }}
+            </p>
+            {% endfor %}
+            </p>
+            <p>{{ form.submit(type="submit", class="btn btn-outline-success") }}</p>
+            {{message}}
+        </form>
+    </div>
+    <div class="col-xl-4 col-lg-5">
+        <div class="card shadow mb-4">
+            <div
+                    class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                <h6 class="m-0 font-weight-bold">Статистика ответов</h6>
+            </div>
+            <!-- Card Body -->
+            <div class="card-body">
+                <div class="chart-pie pt-4 pb-2">
+                    <canvas id="myPieChart"></canvas>
+                </div>
             </div>
         </div>
     </div>

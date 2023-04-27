@@ -3,3 +3,4 @@
 /static/media/vid/*.avi
 /static/media/img/*.png
 /static/media/img/*.jpg
+/.idea/

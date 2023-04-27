@@ -20,6 +20,7 @@ class User(SqlAlchemyBase, UserMixin, SerializerMixin):
     created_date = sqlalchemy.Column(sqlalchemy.DateTime, default=datetime.datetime.now)
     is_admin = sqlalchemy.Column(sqlalchemy.Boolean, default=False)
     completed_tasks = orm.relation('Points', back_populates='user')
+    stats = orm.relation('UserStats', back_populates='user')
 
     def set_password(self, password):
         self.hashed_password = generate_password_hash(password)

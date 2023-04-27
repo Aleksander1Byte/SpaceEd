@@ -14,6 +14,7 @@ from werkzeug.exceptions import abort
 import data.forms.CreateTheoryForm as cthf
 import data.forms.CreateTaskForm as ctaf
 import data.forms.AnswerTaskForm as ataf
+import data.forms.StatsForm as staf
 from werkzeug.utils import redirect
 
 from data.forms.LoginForm import LoginForm
@@ -22,6 +23,7 @@ from data.tasks import Task
 from data.theories import Theory
 from data.points import Points
 from data.users import User
+from data.userstats import UserStats
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret_key'
@@ -87,10 +89,7 @@ def get_unique_groups(db_sess):
 def view_tasks():
     db_sess = create_session()
     ratings, tasks = get_tasks_and_ratings(db_sess)
-    context = {
-        'tasks': tasks,
-        'ratings': ratings
-    }
+    context = {'tasks': tasks, 'ratings': ratings}
     return render_template('tasks.html', current_user=current_user, **context)
 
 
@@ -114,24 +113,41 @@ def get_tasks_and_ratings(db_sess):
     return ratings, tasks
 
 
-@app.route('/profile', methods=['GET'])
+@app.route('/profile', methods=['GET', 'POST'])
 @login_required
 def profile():
     db_sess = create_session()
+    stats = (
+        db_sess.query(UserStats).filter((UserStats.user_id == current_user.id)).first()
+    )
+    form = staf.StatsForm(
+        weight=stats.weight, height=stats.height, birthday=stats.birthday
+    )
+    if form.validate_on_submit():
+        db_sess.delete(stats)
+        stats = UserStats(
+            user_id=current_user.id,
+            weight=form.weight.data,
+            height=form.height.data,
+            birthday=form.birthday.data,
+        )
+        db_sess.add(stats)
+        db_sess.commit()
     ratings, tasks = get_tasks_and_ratings(db_sess)
     correct = incorrect = didnt = 0
     for i in range(len(tasks)):
         if ratings[i]:
             if tasks[i].given_points == ratings[i].amount:
-                correct += 1
+                correct += tasks[i].given_points
             else:
-                incorrect += 1
+                incorrect += tasks[i].given_points
         else:  # Не приступали
-            didnt += 1
+            didnt += tasks[i].given_points
     context = {
         'data': [correct, incorrect, didnt],
         'tasks': tasks,
-        'ratings': ratings
+        'ratings': ratings,
+        'form': form,
     }
     return render_template('profile.html', current_user=current_user, **context)
 
@@ -284,7 +300,11 @@ def register():
         user.set_password(form.password.data)
         db_sess.add(user)
         db_sess.commit()
-        return redirect('/login')
+
+        stats = UserStats(user_id=user.id)
+        db_sess.add(stats)
+        db_sess.commit()
+        return redirect('/')
     return render_template(
         'register.html', title='Регистрация', form=form, current_user=current_user
     )
