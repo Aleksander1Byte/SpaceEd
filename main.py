@@ -314,7 +314,7 @@ def register():
         stats = UserStats(user_id=user.id)
         db_sess.add(stats)
         db_sess.commit()
-        return redirect('/')
+        return redirect('/login')
     return render_template(
         'register.html', title='Регистрация', form=form, current_user=current_user
     )

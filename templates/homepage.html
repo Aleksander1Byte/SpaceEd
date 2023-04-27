@@ -1,17 +1,48 @@
 {% extends "index.html" %}
 
+{% block prenav %}
+<div id="background">
+    <img src="static/img/bg.jpg" class="stretch" alt=""/>
+</div>
+{% endblock %}
+
 {% block content %}
+
 {% if current_user.is_authenticated %}
 <center>
-    <div>
+    <div class="waviy">
         {% if didnt %}
         <div>
             <div class="giant">{{ didnt }}</div>
-            <div class="very_big">Столько заданий осталось прорешать</div>
+            <div class="very_big">
+                {% for letter in 'Столько заданий осталось решить' %}
+                <span style="--i:{{ loop.index }}">{{ letter }}</span>
+                {% endfor %}
+            </div>
         </div>
         {% else %}
-        <div class="very_big">Все задания сделаны!</div>
+        <div class="very_big mt-32">
+            {% for letter in 'Все задания сделаны!' %}
+            <span style="--i:{{ loop.index }}">{{ letter }}</span>
+            {% endfor %}
+        </div>
         {% endif %}
+    </div>
+
+</center>
+{% else %}
+<center>
+    <div class="waviy mt-32">
+        <div>
+            <div class="small_giant">
+                Присоединяйтесь! Миссия:
+            </div>
+            <div class="very_big">
+                {% for letter in 'наставник космонавта' %}
+                <span style="--i:{{ loop.index }}">{{ letter }}</span>
+                {% endfor %}
+            </div>
+        </div>
     </div>
 </center>
 {% endif %}
