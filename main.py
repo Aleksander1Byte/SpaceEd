@@ -6,14 +6,18 @@ from flask import Flask, render_template, redirect, request
 from flask_login import (
     current_user,
     login_user,
-    LoginManager, login_required, logout_user,
+    LoginManager,
+    login_required,
+    logout_user,
 )
 from werkzeug.exceptions import abort
-import data.forms.CreateTheoryForm as ctf
+import data.forms.CreateTheoryForm as cthf
+import data.forms.CreateTaskForm as ctaf
 from werkzeug.utils import redirect
 
 from data.forms.LoginForm import LoginForm
 from data.forms.RegisterForm import RegisterForm
+from data.tasks import Task
 from data.theories import Theory
 from data.users import User
 
@@ -59,11 +63,37 @@ def admin_only(func):
     return check
 
 
+@app.route('/add_task', methods=['GET', 'POST'])
+@login_required
+@admin_only
+def new_test():
+    form = ctaf.NewTaskForm()
+    if form.validate_on_submit():
+        picture = request.files['picture'] if 'picture' in request.files else None
+        db_sess = create_session()
+        task = Task(
+            question=form.question.data,
+        )
+
+        task.set_picture_path(picture)
+
+        db_sess.add(task)
+        db_sess.commit()
+        return redirect('/')
+    return render_template(
+        'new_task.html',
+        title='Загрузка нового задания',
+        current_user=current_user,
+        form=form,
+        task=None,
+    )
+
+
 @app.route('/add_theory', methods=['GET', 'POST'])
 @login_required
 @admin_only
 def new_theory():
-    form = ctf.NewTheoryForm()
+    form = cthf.NewTheoryForm()
     if form.validate_on_submit():
         video = request.files['video'] if 'video' in request.files else None
         picture = request.files['picture'] if 'picture' in request.files else None
@@ -113,13 +143,7 @@ def register():
                 current_user=current_user,
             )
         db_sess = create_session()
-        if (
-            db_sess.query(User)
-            .filter(
-                (User.email == form.email.data)
-            )
-            .first()
-        ):
+        if db_sess.query(User).filter((User.email == form.email.data)).first():
             return render_template(
                 'register.html',
                 title='Регистрация',
@@ -127,7 +151,11 @@ def register():
                 message="Такой пользователь уже есть",
                 current_user=current_user,
             )
-        user = User(first_name=form.first_name.data, last_name=form.last_name.data, email=form.email.data)
+        user = User(
+            first_name=form.first_name.data,
+            last_name=form.last_name.data,
+            email=form.email.data,
+        )
         user.set_password(form.password.data)
         db_sess.add(user)
         db_sess.commit()
