@@ -1,4 +1,5 @@
 from functools import wraps
+from math import ceil
 
 from data.db_session import global_init, create_session
 import os
@@ -19,6 +20,7 @@ from werkzeug.utils import redirect
 
 from data.forms.LoginForm import LoginForm
 from data.forms.RegisterForm import RegisterForm
+from data.forms.ManualAnswerForm import ManualAnswerForm
 from data.manualanswer import ManualAnswer
 from data.tasks import Task
 from data.theories import Theory
@@ -68,10 +70,7 @@ def main():
                 didnt += 1
         context.update({'didnt': didnt})
     return render_template(
-        'homepage.html',
-        title='SpaceEd',
-        current_user=current_user,
-        **context
+        'homepage.html', title='SpaceEd', current_user=current_user, **context
     )
 
 
@@ -148,10 +147,10 @@ def profile():
     correct = incorrect = didnt = 0
     for i in range(len(tasks)):
         if ratings[i]:
-            if tasks[i].given_points == ratings[i].amount:
-                correct += tasks[i].given_points
+            if tasks[i].given_points == 0:
+                incorrect += ratings[i].amount
             else:
-                incorrect += tasks[i].given_points
+                correct += ratings[i].amount
         else:  # Не приступали
             didnt += tasks[i].given_points
     context = {
@@ -161,6 +160,31 @@ def profile():
         'form': form,
     }
     return render_template('profile.html', current_user=current_user, **context)
+
+
+@app.route('/checkMA', methods=['GET', 'POST'])
+@login_required
+@admin_only
+def check_manualanswer():
+    db_sess = create_session()
+    form = ManualAnswerForm()
+    ma = db_sess.query(ManualAnswer).first()
+    if not ma:
+        return redirect('/')
+    if form.validate_on_submit():
+        point = Points(
+            user_id=current_user.id,
+            task_id=ma.tsk.id,
+            amount=ceil((ma.tsk.given_points * (int(form.score.data) / 100))),
+        )
+        db_sess.delete(ma)
+        db_sess.add(point)
+        db_sess.commit()
+
+    context = {'ma': ma, 'form': form}
+    return render_template(
+        'check_manualanswer.html', current_user=current_user, **context
+    )
 
 
 @app.route('/add_task', methods=['GET', 'POST'])
@@ -214,7 +238,9 @@ def solve_task(id):
         .filter((Points.user_id == current_user.id) & (Points.task_id == task.id))
         .first()
     )
-    if db_sess.query(ManualAnswer).filter((ManualAnswer.user_id == current_user.id) & (ManualAnswer.task_id == task.id)):
+    if db_sess.query(ManualAnswer).filter(
+        (ManualAnswer.user_id == current_user.id) & (ManualAnswer.task_id == task.id)
+    ):
         return redirect('/tasks')
     if answered:
         return f'За это заданиие у вас {answered.amount} очков'
@@ -231,11 +257,7 @@ def solve_task(id):
             db_sess.commit()
             return redirect('/tasks')
         else:
-            ans = ManualAnswer(
-                user_id=current_user.id,
-                task_id=task.id,
-                answer=answer
-            )
+            ans = ManualAnswer(user_id=current_user.id, task_id=task.id, answer=answer)
             db_sess.add(ans)
             db_sess.commit()
             return redirect('/tasks')

@@ -12,7 +12,7 @@
   </thead>
   <tbody>
   {% for task in tasks %}
-    <tr class="{% if ratings[loop.index0].amount == task.given_points %}green_line {% elif ratings[loop.index0].amount is not defined %}{% else %} red_line {% endif %}">
+    <tr class="{% if ratings[loop.index0].amount == task.given_points %}green_line {% elif ratings[loop.index0].amount is not defined %} {% elif ratings[loop.index0].amount == 0 %}red_line {% else%}yellow_line {% endif %}">
       <th scope="row">{{ task.id }}</th>
       <td>{{ task.question }}</td>
       <td> {{ task.given_points }} </td>

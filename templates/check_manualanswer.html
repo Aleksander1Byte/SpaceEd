@@ -1,0 +1,26 @@
+{% extends "index.html" %}
+
+{% block content %}
+<center>
+    <div class="big width-45">
+        <div><b>Ученик:</b> {{ma.user.__repr__()}}</div>
+        <div><b>Вопрос:</b> {{ma.tsk.question}}</div>
+        <div><b>Ответ:</b> {{ma.answer}}</div>
+
+        <form action="" method="POST" class="form form-70">
+            {{ form.hidden_tag() }}
+            <p>
+                <b>{{ form.score.label }}</b><br>
+                {{ form.score(class="form-control") }}<br>
+                {% for error in form.score.errors %}
+            <p class="alert alert-danger" role="alert">
+                {{ error }}
+            </p>
+            {% endfor %}
+            </p>
+            <p>{{ form.submit(type="submit", class="btn btn-primary") }}</p>
+            {{message}}
+        </form>
+    </div>
+</center>
+{% endblock %}

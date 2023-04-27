@@ -7,6 +7,9 @@ tr.green_line {
 tr.red_line {
     background-color: red;
 }
+tr.yellow_line {
+    background-color: yellow;
+}
 .giant {
     font-size: 45vh!important;
 }
