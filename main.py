@@ -86,6 +86,15 @@ def get_unique_groups(db_sess):
 @login_required
 def view_tasks():
     db_sess = create_session()
+    ratings, tasks = get_tasks_and_ratings(db_sess)
+    context = {
+        'tasks': tasks,
+        'ratings': ratings
+    }
+    return render_template('tasks.html', current_user=current_user, **context)
+
+
+def get_tasks_and_ratings(db_sess):
     user_group = current_user.group_id
     tasks = (
         db_sess.query(Task)
@@ -102,11 +111,29 @@ def view_tasks():
                 .first()
             )
         )
+    return ratings, tasks
+
+
+@app.route('/profile', methods=['GET'])
+@login_required
+def profile():
+    db_sess = create_session()
+    ratings, tasks = get_tasks_and_ratings(db_sess)
+    correct = incorrect = didnt = 0
+    for i in range(len(tasks)):
+        if ratings[i]:
+            if tasks[i].given_points == ratings[i].amount:
+                correct += 1
+            else:
+                incorrect += 1
+        else:  # Не приступали
+            didnt += 1
     context = {
+        'data': [correct, incorrect, didnt],
         'tasks': tasks,
         'ratings': ratings
     }
-    return render_template('tasks.html', current_user=current_user, **context)
+    return render_template('profile.html', current_user=current_user, **context)
 
 
 @app.route('/add_task', methods=['GET', 'POST'])
