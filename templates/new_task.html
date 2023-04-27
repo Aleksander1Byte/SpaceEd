@@ -1,62 +1,66 @@
 {% extends "index.html" %}
 
 {% block content %}
-<form action="" method="POST" class="form" enctype=multipart/form-data>
-    <h1 style="padding-top: 1vh;">Загрузить задание</h1>
-    {{ form.hidden_tag() }}
-    <p>
-        {{ form.question.label }}<br>
-        {{ form.question(class="form-control") }}<br>
-        {% for error in form.question.errors %}
-    <p class="alert alert-danger" role="alert">
-        {{ error }}
-    </p>
-    {% endfor %}
-    </p>
-    <p>
-        {{ form.answer.label }}<br>
-        {{ form.answer(class="form-control") }}<br>
-        {% for error in form.answer.errors %}
-    <p class="alert alert-danger" role="alert">
-        {{ error }}
-    </p>
-    {% endfor %}
-    </p>
-    <p>
-        {{ form.points.label }}<br>
-        {{ form.points(class="form-control") }}<br>
-        {% for error in form.points.errors %}
-    <p class="alert alert-danger" role="alert">
-        {{ error }}
-    </p>
-    {% endfor %}
-    </p>
-  <div class="form-group">
-        <p>
-            {{ form.picture.label }}<br>
-            <input type="file" class="form-control-file" id="picture" name="picture">
-            {% for error in form.picture.errors %}
-        <p class="alert alert-danger" role="alert">
-            {{ error }}
-        </p>
-        {% endfor %}
-        </p>
-    </div>
-    <div class="form-group">
-        <p>
-            Выдать доступ:<br>
-        {% for group in unique_groups.keys() %}
-        <div class="form-check">
-            <input class="form-check-input" type="checkbox" name="group" value="{{ group }}" id="{{ group }}">
-            <label class="form-check-label" for="{{ group }}">
-                Группа {{ group }} ({{", ".join(unique_groups[group])}})
-            </label>
-        </div>
-        </p>
-    </div>
-    {% endfor %}
+<center>
+    <div class="width-45">
+        <form action="" method="POST" class="form" enctype=multipart/form-data>
+            <h1 style="padding-top: 1vh;">Загрузить задание</h1>
+            {{ form.hidden_tag() }}
+            <p>
+                {{ form.question.label }}<br>
+                {{ form.question(class="form-control") }}<br>
+                {% for error in form.question.errors %}
+            <p class="alert alert-danger" role="alert">
+                {{ error }}
+            </p>
+            {% endfor %}
+            </p>
+            <p>
+                {{ form.answer.label }}<br>
+                {{ form.answer(class="form-control") }}<br>
+                {% for error in form.answer.errors %}
+            <p class="alert alert-danger" role="alert">
+                {{ error }}
+            </p>
+            {% endfor %}
+            </p>
+            <p>
+                {{ form.points.label }}<br>
+                {{ form.points(class="form-control") }}<br>
+                {% for error in form.points.errors %}
+            <p class="alert alert-danger" role="alert">
+                {{ error }}
+            </p>
+            {% endfor %}
+            </p>
+            <div class="form-group">
+                <p>
+                    {{ form.picture.label }}<br>
+                    <input type="file" class="form-control-file" id="picture" name="picture">
+                    {% for error in form.picture.errors %}
+                <p class="alert alert-danger" role="alert">
+                    {{ error }}
+                </p>
+                {% endfor %}
+                </p>
+            </div>
+            <div class="form-group">
+                <p>
+                    Выдать доступ:<br>
+                    {% for group in unique_groups.keys() %}
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="group" value="{{ group }}" id="{{ group }}">
+                    <label class="form-check-label" for="{{ group }}">
+                        Группа {{ group }} ({{", ".join(unique_groups[group])}})
+                    </label>
+                </div>
+            {% endfor %}
+                </p>
+            </div>
 
-    <p>{{ form.submit(type="submit", class="btn btn-primary") }}</p>
-    {{message}}
-</form>
+            <p>{{ form.submit(type="submit", class="btn btn-primary") }}</p>
+            {{message}}
+        </form>
+    </div>
+</center>
 {% endblock %}

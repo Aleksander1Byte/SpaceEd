@@ -2,64 +2,71 @@
 
 {% block content %}
 
-<form action="" method="POST" class="form form-70">
-    <h1 style="padding-top: 1vh">Регистрация нового пользователя</h1>
-    {{ form.hidden_tag() }}
-    <p>
-        {{ form.email.label }}<br>
-        {{ form.email(class="form-control", type="email") }}<br>
-        {% for error in form.email.errors %}
-    <p class="alert alert-danger" role="alert">
-        {{ error }}
-    </p>
-    {% endfor %}
-    </p>
-    <p>
-        {{ form.first_name.label }}<br>
-        {{ form.first_name(class="form-control") }}<br>
-        {% for error in form.first_name.errors %}
-    <p class="alert alert-danger" role="alert">
-        {{ error }}
-    </p>
-    {% endfor %}
-    </p>
-    <p>
-        {{ form.last_name.label }}<br>
-        {{ form.last_name(class="form-control") }}<br>
-        {% for error in form.last_name.errors %}
-    <p class="alert alert-danger" role="alert">
-        {{ error }}
-    </p>
-    {% endfor %}
-    </p>
-    <p>
-        {{ form.group_id.label }}<br>
-        {{ form.group_id(class="form-control") }}<br>
-        {% for error in form.group_id.errors %}
-    <p class="alert alert-danger" role="alert">
-        {{ error }}
-    </p>
-    {% endfor %}
-    </p>
-    <p>
-        {{ form.password.label }}<br>
-        {{ form.password(class="form-control", type="password") }}<br>
-        {% for error in form.password.errors %}
-    <p class="alert alert-danger" role="alert">
-        {{ error }}
-    </p>
-    {% endfor %}
-    </p>
-    <p>
-        {{ form.password_again.label }}<br>
-        {{ form.password_again(class="form-control", type="password") }}<br>
-        {% for error in form.password_again.errors %}
-    <p class="alert alert-danger" role="alert">
-        {{ error }}
-    </p>
-    {% endfor %}
-    </p>
-    <p>{{ form.submit(type="submit", class="btn btn-primary") }}</p>
-    {{message}}
-</form>
+<div class="d-flex">
+    <div class="width-45">
+        <form action="" method="POST" class="form form-70">
+            <h1 style="padding-top: 1vh">Регистрация нового пользователя</h1>
+            {{ form.hidden_tag() }}
+            <p>
+                <b>{{ form.email.label }}</b><br>
+                {{ form.email(class="form-control", type="email") }}<br>
+                {% for error in form.email.errors %}
+            <p class="alert alert-danger" role="alert">
+                {{ error }}
+            </p>
+            {% endfor %}
+            </p>
+            <p>
+                <b>{{ form.first_name.label }}</b><br>
+                {{ form.first_name(class="form-control") }}<br>
+                {% for error in form.first_name.errors %}
+            <p class="alert alert-danger" role="alert">
+                {{ error }}
+            </p>
+            {% endfor %}
+            </p>
+            <p>
+                <b>{{ form.last_name.label }}</b><br>
+                {{ form.last_name(class="form-control") }}<br>
+                {% for error in form.last_name.errors %}
+            <p class="alert alert-danger" role="alert">
+                {{ error }}
+            </p>
+            {% endfor %}
+            </p>
+            <p>
+                <b>{{ form.group_id.label }}</b><br>
+                {{ form.group_id(class="form-control") }}<br>
+                {% for error in form.group_id.errors %}
+            <p class="alert alert-danger" role="alert">
+                {{ error }}
+            </p>
+            {% endfor %}
+            </p>
+            <p>
+                <i>{{ form.password.label }}</i><br>
+                {{ form.password(class="form-control", type="password") }}<br>
+                {% for error in form.password.errors %}
+            <p class="alert alert-danger" role="alert">
+                {{ error }}
+            </p>
+            {% endfor %}
+            </p>
+            <p>
+                <i>{{ form.password_again.label }}</i><br>
+                {{ form.password_again(class="form-control", type="password") }}<br>
+                {% for error in form.password_again.errors %}
+            <p class="alert alert-danger" role="alert">
+                {{ error }}
+            </p>
+            {% endfor %}
+            </p>
+            <p>{{ form.submit(type="submit", class="btn btn-primary") }}</p>
+            {{message}}
+        </form>
+    </div>
+    <div class="pt-5 ps-5">
+        <img src="static/img/astronaut.jpg" style="height: 70vh">
+    </div>
+</div>
 {% endblock %}

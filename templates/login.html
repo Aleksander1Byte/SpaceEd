@@ -2,28 +2,35 @@
 
 {% block content %}
 
-<form action="" method="POST" class="form form-70">
-    <h1 style="padding-top: 1vh">Вход в аккаунт</h1>
-    {{ form.hidden_tag() }}
-    <p>
-        {{ form.email.label }}<br>
-        {{ form.email(class="form-control", type="email") }}<br>
-        {% for error in form.email.errors %}
-    <p class="alert alert-danger" role="alert">
-        {{ error }}
-    </p>
-    {% endfor %}
-    </p>
-    <p>
-        {{ form.password.label }}<br>
-        {{ form.password(class="form-control", type="password") }}<br>
-        {% for error in form.password.errors %}
-    <p class="alert alert-danger" role="alert">
-        {{ error }}
-    </p>
-    {% endfor %}
-    </p>
-    <p>{{ form.submit(type="submit", class="btn btn-primary") }}</p>
-    {{message}}
-</form>
+<div class="d-flex">
+    <div class="width-45">
+        <form action="" method="POST" class="form form-70">
+            <h1 style="padding-top: 1vh">Вход в аккаунт</h1>
+            {{ form.hidden_tag() }}
+            <p>
+                <b>{{ form.email.label }}</b><br>
+                {{ form.email(class="form-control", type="email") }}<br>
+                {% for error in form.email.errors %}
+            <p class="alert alert-danger" role="alert">
+                {{ error }}
+            </p>
+            {% endfor %}
+            </p>
+            <p>
+                <b>{{ form.password.label }}</b><br>
+                {{ form.password(class="form-control", type="password") }}<br>
+                {% for error in form.password.errors %}
+            <p class="alert alert-danger" role="alert">
+                {{ error }}
+            </p>
+            {% endfor %}
+            </p>
+            <p>{{ form.submit(type="submit", class="btn btn-primary") }}</p>
+            {{message}}
+        </form>
+    </div>
+    <div class="pt-5 ps-5">
+        <img src="static/img/rocket.png" style="height: 70vh">
+    </div>
+</div>
 {% endblock %}
