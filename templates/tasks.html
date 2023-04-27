@@ -16,7 +16,7 @@
       <th scope="row">{{ task.id }}</th>
       <td>{{ task.question }}</td>
       <td> {{ task.given_points }} </td>
-      <td>{% if ratings[loop.index0] != None %} {{ ratings[loop.index0].amount }} {% else %} <a href="task/{{ task.id }}">Не пройден</a> {% endif %}</td>
+      <td>{% if ratings[loop.index0] != None %} {{ ratings[loop.index0].amount }} {% else %} <a href="task/{{ task.id }}">Не пройден/На проверке</a> {% endif %}</td>
     </tr>
     {% endfor %}
   </tbody>

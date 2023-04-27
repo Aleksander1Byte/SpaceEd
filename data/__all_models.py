@@ -3,3 +3,4 @@ from . import tasks
 from . import points
 from . import theories
 from . import userstats
+from . import manualanswer

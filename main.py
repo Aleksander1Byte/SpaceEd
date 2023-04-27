@@ -19,6 +19,7 @@ from werkzeug.utils import redirect
 
 from data.forms.LoginForm import LoginForm
 from data.forms.RegisterForm import RegisterForm
+from data.manualanswer import ManualAnswer
 from data.tasks import Task
 from data.theories import Theory
 from data.points import Points
@@ -213,6 +214,8 @@ def solve_task(id):
         .filter((Points.user_id == current_user.id) & (Points.task_id == task.id))
         .first()
     )
+    if db_sess.query(ManualAnswer).filter((ManualAnswer.user_id == current_user.id) & (ManualAnswer.task_id == task.id)):
+        return redirect('/tasks')
     if answered:
         return f'За это заданиие у вас {answered.amount} очков'
     if form.validate_on_submit():
@@ -228,7 +231,14 @@ def solve_task(id):
             db_sess.commit()
             return redirect('/tasks')
         else:
-            print('send_to_check')
+            ans = ManualAnswer(
+                user_id=current_user.id,
+                task_id=task.id,
+                answer=answer
+            )
+            db_sess.add(ans)
+            db_sess.commit()
+            return redirect('/tasks')
     context = {'task': task, 'form': form}
     return render_template('solve_task.html', current_user=current_user, **context)
 
