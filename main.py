@@ -169,13 +169,11 @@ def solve_task(id):
                 point = Points(
                     user_id=current_user.id, task_id=task.id, amount=task.given_points
                 )
-                msg = 'Правильно'
             else:
                 point = Points(user_id=current_user.id, task_id=task.id, amount=0)
-                msg = 'Неправильно'
             db_sess.add(point)
             db_sess.commit()
-            return msg
+            return redirect('/tasks')
         else:
             print('send_to_check')
     context = {'task': task, 'form': form}

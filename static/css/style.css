@@ -1,3 +1,9 @@
 .width-45 {
     width: 45%;
 }
+tr.green_line {
+    background-color: forestgreen;
+}
+tr.red_line {
+    background-color: red;
+}

@@ -12,11 +12,11 @@
   </thead>
   <tbody>
   {% for task in tasks %}
-    <tr>
+    <tr class="{% if ratings[loop.index0].amount == task.given_points %}green_line {% elif ratings[loop.index0].amount is not defined %}{% else %} red_line {% endif %}">
       <th scope="row">{{ task.id }}</th>
       <td>{{ task.question }}</td>
       <td> {{ task.given_points }} </td>
-      <td>{% if ratings[loop.index0] != None %} {{ ratings[loop.index0] }} {% else %} <a href="task/{{ task.id }}">Не пройден</a> {% endif %}</td>
+      <td>{% if ratings[loop.index0] != None %} {{ ratings[loop.index0].amount }} {% else %} <a href="task/{{ task.id }}">Не пройден</a> {% endif %}</td>
     </tr>
     {% endfor %}
   </tbody>
