@@ -5,6 +5,8 @@ from math import ceil
 from flask import Flask, redirect, render_template, request
 from flask_login import (LoginManager, current_user, login_required,
                          login_user, logout_user)
+from flask_restful import Api
+from requests import delete
 from werkzeug.exceptions import abort
 
 import data.forms.AnswerTaskForm as ataf
@@ -17,6 +19,7 @@ from data.forms.ManualAnswerForm import ManualAnswerForm
 from data.forms.RegisterForm import RegisterForm
 from data.manualanswer import ManualAnswer
 from data.points import Points
+from data.resources.theory_recources import TheoriesResource, TheoryListResource
 from data.tasks import Task
 from data.theories import Theory
 from data.users import User
@@ -29,6 +32,11 @@ app.config['MAX_CONTENT_LENGTH'] = 1024 * 1024 * 5120  # 5 GB
 login_manager = LoginManager()
 login_manager.init_app(app)
 global_init('db/database.db')
+
+api = Api(app)
+api.add_resource(TheoryListResource, '/api/theory')
+api.add_resource(TheoriesResource, '/api/theory/<int:object_id>')
+
 DEBUG = True
 
 
@@ -69,6 +77,7 @@ def main():
 
 
 @app.route('/theory/<int:id>', methods=['GET', 'POST'])
+@login_required
 def view_theory(id):
     db_sess = create_session()
     thr = db_sess.query(Theory).get(id)
@@ -279,6 +288,13 @@ def solve_task(id):
             return redirect('/tasks')
     context = {'task': task, 'form': form}
     return render_template('solve_task.html', current_user=current_user, **context)
+
+
+@app.route('/theory/delete/<int:id>', methods=['GET', 'POST'])
+@admin_only
+def delete_object(id):
+    delete(f'http://{ADDRESS}/api/theory/{id}')
+    return redirect('/')
 
 
 @app.route('/add_theory', methods=['GET', 'POST'])

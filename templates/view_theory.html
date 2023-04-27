@@ -16,5 +16,12 @@
     </video>
 </center>
 {% endif %}
+{% if current_user.is_admin %}
+<center>
+    <a href="/theory/delete/{{ thr.id }}">
+        <button type="button" class="btn btn-danger">Удалить</button>
+    </a>
+</center>
+{% endif %}
 
 {% endblock %}
